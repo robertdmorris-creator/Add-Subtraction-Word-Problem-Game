@@ -387,6 +387,11 @@
                 // Re-enable inputs
                 answerEls[id].setAttribute('onclick', 'openNumpad(this)');
                 // unitEls[id].disabled = false; // Removed
+
+                // Clear stored answer and reset style
+                answerEls[id].removeAttribute('data-answer');
+                answerEls[id].style.color = '#1f2937';
+                answerEls[id].classList.remove('italic');
             });
 
             checkBtn.classList.remove('hidden');
@@ -415,13 +420,20 @@
             statusEls[teamId].textContent = "Submitted!";
             statusEls[teamId].style.color = teamColors[teamId].text;
 
-            // Check for correctness immediately
+            // --- NEW: Hide the submitted answer ---
+            answerEls[teamId].setAttribute('data-answer', num); // Store the answer
+            answerEls[teamId].value = "LOCKED IN"; // Show "LOCKED IN"
+            answerEls[teamId].style.color = '#4b5563'; // Change text color to gray
+            answerEls[teamId].classList.add('italic');
+
+            // Check for correctness immediately (but don't show the user)
             const isCorrect = num === currentQuestion.correctAnswer; // Simplified check
             
             if (isCorrect && !firstCorrectTeam) {
                 firstCorrectTeam = teamId;
-                statusEls[teamId].textContent = "Submitted! (Potential Bonus)";
-                statusEls[teamId].style.color = '#ffc83b';
+                // --- MODIFIED: Removed "Potential Bonus" text and color change ---
+                // statusEls[teamId].textContent = "Submitted! (Potential Bonus)";
+                // statusEls[teamId].style.color = '#ffc83b';
             }
         }
         window.submitAnswer = submitAnswer;
@@ -449,7 +461,15 @@
             let bonusAwarded = false;
 
             TEAMS.forEach(id => {
-                const num = parseFloat(answerEls[id].value);
+                // --- MODIFIED: Get the answer from the data-attribute ---
+                const storedAnswer = answerEls[id].getAttribute('data-answer');
+                const num = parseFloat(storedAnswer); // This will be NaN if storedAnswer is null
+
+                // --- NEW: Restore the value for visual checking ---
+                answerEls[id].value = storedAnswer || ''; // Put the number back, or empty string if no submission
+                answerEls[id].style.color = '#1f2937'; // Restore default text color
+                answerEls[id].classList.remove('italic');
+
                 // const unitVal = unitEls[id].value; // Removed
                 
                 if (answerEls[id].hasAttribute('onclick')) {
@@ -659,6 +679,7 @@
     </script>
 </body>
 </html>
+
 
 
 
