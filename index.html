@@ -587,9 +587,20 @@
 
             function dragMouseDown(e) {
                 e = e || window.event;
-                e.preventDefault();
-                let clientX = e.clientX || e.touches[0].clientX;
-                let clientY = e.clientY || e.touches[0].clientY;
+                // Prevent default on touchstart to stop scrolling
+                if (e.type === 'touchstart') {
+                    e.preventDefault();
+                }
+                
+                let clientX, clientY;
+                if (e.type === 'touchstart') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
                 pos3 = clientX;
                 pos4 = clientY;
                 document.onmouseup = closeDragElement;
@@ -600,9 +611,17 @@
 
             function elementDrag(e) {
                 e = e || window.event;
-                e.preventDefault();
-                let clientX = e.clientX || e.touches[0].clientX;
-                let clientY = e.clientY || e.touches[0].clientY;
+                e.preventDefault(); // Prevent scrolling while dragging
+                
+                let clientX, clientY;
+                if (e.type === 'touchmove') {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                
                 pos1 = pos3 - clientX;
                 pos2 = pos4 - clientY;
                 pos3 = clientX;
@@ -640,6 +659,7 @@
     </script>
 </body>
 </html>
+
 
 
 
