@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Updated Title -->
+    <title>Math Mania - 4-Team Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden; /* Prevent scrolling */
+        }
+        .main-grid {
+            display: grid;
+            grid-template-rows: 1.5fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            height: 98vh;
+            width: 98vw;
+            max-width: 1600px;
+        }
+        .center-area {
+            grid-column: span 4; /* Spans all 4 columns */
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center; /* Ensure question text wraps nicely */
+        }
+        .team-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.5s ease;
+        }
+        .question-text {
+            /* Adjusted font size for longer word problems */
+            font-size: 3.5rem; /* MODIFIED: Back to 3.5rem for shorter questions */
+            line-height: 1.2;
+            font-weight: 800;
+            color: #ffc83b; /* Yellow accent */
+            margin: 1rem 0;
+            max-width: 90%; /* Constrain width for better reading */
+        }
+        .score-text {
+            text-shadow: 2px 2px 4px #00000080;
+        }
+        .input-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            /* Made container smaller as it only holds one item */
+            width: 60%;
+            margin-top: 1rem;
+        }
+        .answer-input {
+            border: 4px solid #9ca3af;
+            border-radius: 1rem;
+            padding: 0.5rem;
+            /* Made input wider to fill container */
+            width: 100%;
+            text-align: center;
+            /* Made font bigger */
+            font-size: 2.25rem;
+            font-weight: 700;
+            background-color: #f9fafb;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+        /* Unit select is no longer needed */
+        .unit-select {
+            display: none;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 0 0 #4b5563;
+        }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 0 #4b5563;
+        }
+        .drag-handle {
+            cursor: move;
+            user-select: none;
+        }
+        .numpad-btn {
+            height: 60px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            background-color: #f3f4f6;
+            border: 1px solid #d1d5db;
+            transition: background-color 0.2s;
+        }
+         .numpad-btn:active {
+            background-color: #d1d5db;
+        }
+        /* Custom styles for setup modal */
+        #setup-modal input[type="text"] {
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 2rem;
+            text-align: center;
+        }
+        #setup-modal input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 80px;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+        }
+        #setup-modal input[type="color"]::-webkit-color-swatch {
+            border-radius: 0.75rem;
+            border: 4px solid #9ca3af;
+        }
+        #setup-modal input[type="color"]::-moz-color-swatch {
+            border-radius: 0.75rem;
+            border: 4px solid #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 flex items-center justify-center">
+    
+    <!-- Setup Modal -->
+    <div id="setup-modal" class="absolute inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white p-10 rounded-2xl shadow-2xl text-center w-full max-w-5xl">
+            <!-- Updated Title -->
+            <h1 class="text-6xl font-extrabold mb-8">Math Mania Setup</h1>
+            <div class="grid grid-cols-4 gap-6 mb-8 text-2xl font-bold">
+                <div>Team 1</div><div>Team 2</div><div>Team 3</div><div>Team 4</div>
+            </div>
+            <div class="grid grid-cols-4 gap-6 mb-8">
+                <input type="text" id="team1-name-input" value="Team 1">
+                <input type="text" id="team2-name-input" value="Team 2">
+                <input type="text" id="team3-name-input" value="Team 3">
+                <input type="text" id="team4-name-input" value="Team 4">
+            </div>
+            <div class="grid grid-cols-4 gap-6 mb-10">
+                 <input type="color" id="team1-color-input" value="#22c55e"> <!-- Green -->
+                 <input type="color" id="team2-color-input" value="#3b82f6"> <!-- Blue -->
+                 <input type="color" id="team3-color-input" value="#f472b6"> <!-- Pink -->
+                 <input type="color" id="team4-color-input" value="#f97316"> <!-- Orange -->
+            </div>
+            <button id="start-game-btn" class="btn bg-green-500 hover:bg-green-600 text-white">Start Game!</button>
+        </div>
+    </div>
+
+    <button id="fullscreen-btn" class="fixed top-4 right-4 bg-white p-3 rounded-full shadow-md z-[60] hover:bg-gray-200 transition hidden">
+         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+    </button>
+
+    <div id="game-container" class="main-grid relative hidden">
+        <!-- Center Section (Spans 4 columns) -->
+        <div id="center-section" class="center-area">
+            <!-- Updated Prompt Text -->
+            <p class="text-3xl text-gray-200">Solve the word problem:</p>
+            <p id="question-text" class="question-text">Game Setup Complete. Press START!</p>
+            
+            <div id="feedback-area" class="text-3xl font-bold h-10 mt-2"></div>
+
+            <div class="mt-8 flex gap-4">
+                <button id="check-btn" class="btn bg-gray-600 hover:bg-gray-700 text-white">Check Answers</button>
+                <button id="next-btn" class="btn bg-gray-500 hover:bg-gray-600 text-white hidden">Next Question</button>
+            </div>
+        </div>
+
+        <!-- Team Sections (Row 2, 4 columns) -->
+        <div id="team1-section" class="team-section">
+            <h2 id="team1-name" class="text-4xl font-extrabold text-center">Team 1</h2>
+            <p class="text-6xl font-extrabold score-text"><span id="team1-score">0</span></p>
+            <div class="input-container">
+                <input type="text" id="team1-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
+                <!-- Unit select is hidden via CSS -->
+                <select id="team1-unit" class="unit-select"></select>
+            </div>
+            <p id="team1-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+        </div>
+
+        <div id="team2-section" class="team-section">
+            <h2 id="team2-name" class="text-4xl font-extrabold text-center">Team 2</h2>
+            <p class="text-6xl font-extrabold score-text"><span id="team2-score">0</span></p>
+            <div class="input-container">
+                <input type="text" id="team2-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
+                <select id="team2-unit" class="unit-select"></select>
+            </div>
+            <p id="team2-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+        </div>
+
+        <div id="team3-section" class="team-section">
+            <h2 id="team3-name" class="text-4xl font-extrabold text-center">Team 3</h2>
+            <p class="text-6xl font-extrabold score-text"><span id="team3-score">0</span></p>
+            <div class="input-container">
+                <input type="text" id="team3-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
+                <select id="team3-unit" class="unit-select"></select>
+            </div>
+            <p id="team3-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+        </div>
+
+        <div id="team4-section" class="team-section">
+            <h2 id="team4-name" class="text-4xl font-extrabold text-center">Team 4</h2>
+            <p class="text-6xl font-extrabold score-text"><span id="team4-score">0</span></p>
+            <div class="input-container">
+                <input type="text" id="team4-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
+                <select id="team4-unit" class="unit-select"></select>
+            </div>
+            <p id="team4-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+        </div>
+    </div>
+
+    <!-- Number Pad (Unchanged) -->
+    <div id="numpad-container" class="hidden fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50">
+        <div class="bg-gray-200 rounded-lg shadow-xl w-full max-w-[320px]">
+            <div id="numpad-header" class="drag-handle p-2 bg-gray-300 rounded-t-lg">
+                <h3 class="font-bold text-center text-gray-700">Number Pad</h3>
+            </div>
+            <div id="numpad" class="grid grid-cols-4 gap-2 p-3">
+                <button class="numpad-btn" onclick="appendNumpad('1')">1</button>
+                <button class="numpad-btn" onclick="appendNumpad('2')">2</button>
+                <button class="numpad-btn" onclick="appendNumpad('3')">3</button>
+                <button class="numpad-btn" onclick="backspaceNumpad()">&larr;</button>
+                <button class="numpad-btn" onclick="appendNumpad('4')">4</button>
+                <button class="numpad-btn" onclick="appendNumpad('5')">5</button>
+                <button class="numpad-btn" onclick="appendNumpad('6')">6</button>
+                <button class="numpad-btn" onclick="appendNumpad('0')">0</button> <!-- MODIFIED: Swapped '.' for '0' -->
+                <button class="numpad-btn" onclick="appendNumpad('7')">7</button>
+                <button class="numpad-btn" onclick="appendNumpad('8')">8</button>
+                <button class="numpad-btn" onclick="appendNumpad('9')">9</button>
+                <button class="numpad-btn" onclick="backspaceNumpad()">&larr;</button> <!-- MODIFIED: Moved backspace -->
+                <button class="numpad-btn bg-blue-500 text-white col-span-4" onclick="closeNumpad()">Done</button>
+            </div>
+             <div id="numpad-footer" class="drag-handle p-2 bg-gray-300 rounded-b-lg text-center text-gray-600">
+                DRAG
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // --- NEW: Harder 2-Number Word Problem Templates ---
+        const PROBLEM_TEMPLATES = [
+            { type: 'add', text: "A school library has [NUM1] books. It receives a donation of [NUM2] new books. How many books does the library have now?" },
+            { type: 'add', text: "On Monday, [NUM1] people visited the zoo. On Tuesday, [NUM2] people visited. How many people visited in total on those two days?" },
+            { type: 'sub', text: "A plane is flying at [NUM1] feet. It descends [NUM2] feet. What is the plane's new altitude?" },
+            { type: 'sub', text: "A company has $[NUM1] in its budget. It spends $[NUM2] on new equipment. How much money is left in the budget?" },
+            { type: 'add', text: "A factory produced [NUM1] widgets in the morning and [NUM2] widgets in the afternoon. How many widgets were produced in all?" },
+            { type: 'sub', text: "A stadium has [NUM1] seats. There are [NUM2] fans at the game. How many seats are empty?" }
+        ];
+        
+        const TEAMS = ['team1', 'team2', 'team3', 'team4'];
+        let teamColors = {};
+
+        let currentQuestion = {};
+        let scores = { team1: 0, team2: 0, team3: 0, team4: 0 };
+        let activeInput = null;
+        let firstCorrectTeam = null; 
+
+        // --- DOM Elements ---
+        const scoreEls = {};
+        const answerEls = {};
+        // unitEls no longer needed
+        const sectionEls = {};
+        const nameEls = {};
+        const statusEls = {};
+        
+        TEAMS.forEach(id => {
+            scoreEls[id] = document.getElementById(`${id}-score`);
+            answerEls[id] = document.getElementById(`${id}-answer`);
+            // unitEls[id] is removed
+            sectionEls[id] = document.getElementById(`${id}-section`);
+            nameEls[id] = document.getElementById(`${id}-name`);
+            statusEls[id] = document.getElementById(`${id}-status`);
+        });
+
+        const questionTextEl = document.getElementById('question-text');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const feedbackEl = document.getElementById('feedback-area');
+        const numpadContainer = document.getElementById('numpad-container');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const setupModal = document.getElementById('setup-modal');
+        const gameContainer = document.getElementById('game-container');
+        const startGameBtn = document.getElementById('start-game-btn');
+
+
+        // --- Utility Functions (Unchanged) ---
+        function getContrastColor(hexcolor){
+            hexcolor = hexcolor.replace("#", "");
+            var r = parseInt(hexcolor.substr(0,2),16);
+            var g = parseInt(hexcolor.substr(2,2),16);
+            var b = parseInt(hexcolor.substr(4,2),16);
+            var yiq = ((r*299)+(g*587)+(b*114))/1000;
+            return (yiq >= 150) ? '#1f2937' : '#FFFFFF';
+        }
+        function lightenColor(hex, percent) {
+            hex = hex.replace("#", "");
+            const num = parseInt(hex, 16),
+            amt = Math.round(2.55 * percent),
+            R = (num >> 16) + amt,
+            G = (num >> 8 & 0x00FF) + amt,
+            B = (num & 0x0000FF) + amt;
+            return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255)).toString(16).slice(1);
+        }
+
+        // --- Game Logic ---
+
+        function generateQuestion() {
+            firstCorrectTeam = null; 
+
+            // Pick a random problem template
+            const template = PROBLEM_TEMPLATES[Math.floor(Math.random() * PROBLEM_TEMPLATES.length)];
+            
+            let num1, num2;
+            let questionString = "";
+            let correctAnswer = 0;
+
+            // Generate numbers in larger ranges
+            num1 = Math.floor(Math.random() * 900) + 100; // 100-999
+            num2 = Math.floor(Math.random() * 900) + 100; // 100-999
+
+            switch (template.type) {
+                case 'add':
+                    correctAnswer = num1 + num2;
+                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
+                    break;
+                
+                case 'sub':
+                    // Ensure num1 is always larger than num2 for subtraction
+                    if (num1 < num2) {
+                        [num1, num2] = [num2, num1]; // Swap them
+                    }
+                    correctAnswer = num1 - num2;
+                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
+                    break;
+            }
+
+            currentQuestion = {
+                questionString,
+                correctAnswer,
+            };
+
+            questionTextEl.textContent = currentQuestion.questionString;
+            // populateUnitSelectors(); // No longer needed
+            resetBoard();
+        }
+        
+        // populateUnitSelectors() is no longer needed
+
+        function resetBoard() {
+            TEAMS.forEach(id => {
+                answerEls[id].value = '';
+                // unitEls[id].value = ''; // Removed
+                answerEls[id].classList.remove('bg-green-200', 'bg-red-200');
+                // unitEls[id].classList.remove('bg-green-200', 'bg-red-200'); // Removed
+                
+                // Reset border and background colors
+                answerEls[id].style.borderColor = teamColors[id].bg;
+                // unitEls[id].style.borderColor = teamColors[id].bg; // Removed
+                sectionEls[id].style.backgroundColor = teamColors[id].bg;
+                statusEls[id].textContent = 'Answer here';
+                statusEls[id].style.color = teamColors[id].text;
+                
+                // Re-enable inputs
+                answerEls[id].setAttribute('onclick', 'openNumpad(this)');
+                // unitEls[id].disabled = false; // Removed
+            });
+
+            checkBtn.classList.remove('hidden');
+            nextBtn.classList.add('hidden');
+            feedbackEl.textContent = '';
+        }
+
+        // --- Submit Answer (Updated) ---
+        function submitAnswer(teamId) {
+            if (checkBtn.classList.contains('hidden')) return;
+
+            const num = parseFloat(answerEls[teamId].value);
+            // const unitVal = unitEls[teamId].value; // Removed
+            
+            // Check for valid number
+            if (isNaN(num)) {
+                statusEls[teamId].textContent = "Need a value!"; // Updated message
+                statusEls[teamId].style.color = '#ef4444'; // Red text
+                setTimeout(() => statusEls[teamId].style.color = teamColors[teamId].text, 1500);
+                return;
+            }
+
+            // Immediately disable input after submission
+            answerEls[teamId].removeAttribute('onclick');
+            // unitEls[teamId].disabled = true; // Removed
+            statusEls[teamId].textContent = "Submitted!";
+            statusEls[teamId].style.color = teamColors[teamId].text;
+
+            // Check for correctness immediately
+            const isCorrect = num === currentQuestion.correctAnswer; // Simplified check
+            
+            if (isCorrect && !firstCorrectTeam) {
+                firstCorrectTeam = teamId;
+                statusEls[teamId].textContent = "Submitted! (Potential Bonus)";
+                statusEls[teamId].style.color = '#ffc83b';
+            }
+        }
+        window.submitAnswer = submitAnswer;
+
+        function checkAnswers() {
+            let allAnswered = true;
+            let submittedCount = 0;
+            
+            TEAMS.forEach(id => {
+                if (answerEls[id].hasAttribute('onclick')) {
+                    allAnswered = false;
+                } else {
+                    submittedCount++;
+                }
+            });
+
+            if (!allAnswered && submittedCount < 1) {
+                feedbackEl.textContent = "Please wait for submissions or submit one answer to proceed.";
+                feedbackEl.style.color = 'red';
+                return;
+            }
+            
+            checkBtn.classList.add('hidden');
+            nextBtn.classList.remove('hidden');
+            let bonusAwarded = false;
+
+            TEAMS.forEach(id => {
+                const num = parseFloat(answerEls[id].value);
+                // const unitVal = unitEls[id].value; // Removed
+                
+                if (answerEls[id].hasAttribute('onclick')) {
+                    answerEls[id].removeAttribute('onclick');
+                    // unitEls[id].disabled = true; // Removed
+                }
+                
+                // Simplified correctness check
+                const isCorrect = num === currentQuestion.correctAnswer;
+                
+                let message = "INCORRECT!";
+                
+                if (isCorrect) {
+                    let points = 1;
+                    message = "CORRECT! (+1)";
+
+                    if (id === firstCorrectTeam) {
+                        points += 1;
+                        bonusAwarded = true;
+                        message = "CORRECT! (+1) BONUS! (+1)";
+                    }
+                    
+                    scores[id] += points;
+                    scoreEls[id].textContent = scores[id];
+                    
+                    answerEls[id].classList.add('bg-green-200');
+                    // unitEls[id].classList.add('bg-green-200'); // Removed
+                    answerEls[id].style.borderColor = '#22c55e';
+                    // unitEls[id].style.borderColor = '#22c55e'; // Removed
+                    sectionEls[id].style.backgroundColor = lightenColor(teamColors[id].bg, 20);
+                    statusEls[id].textContent = message;
+                    statusEls[id].style.color = '#10b981';
+                } else {
+                    answerEls[id].classList.add('bg-red-200');
+                    // unitEls[id].classList.add('bg-red-200'); // Removed
+                    answerEls[id].style.borderColor = '#ef4444';
+                    // unitEls[id].style.borderColor = '#ef4444'; // Removed
+                    statusEls[id].textContent = message;
+                    statusEls[id].style.color = '#ef4444';
+                }
+                
+                // Simplified "No Submission" check
+                if (isNaN(num)) {
+                    statusEls[id].textContent = "NO SUBMISSION";
+                    statusEls[id].style.color = '#ef4444';
+                    answerEls[id].style.borderColor = '#ef4444';
+                    // unitEls[id].style.borderColor = '#ef4444'; // Removed
+                }
+            });
+            
+            // Updated feedback text
+            feedbackEl.textContent = `Correct Answer: ${currentQuestion.correctAnswer}`;
+            feedbackEl.style.color = '#ffc83b';
+        }
+
+
+        // --- Setup and Start (Updated) ---
+        function startGame() {
+            TEAMS.forEach(id => {
+                const nameInput = document.getElementById(`${id}-name-input`);
+                const colorInput = document.getElementById(`${id}-color-input`);
+                const color = colorInput.value;
+                
+                teamColors[id] = {
+                    bg: color,
+                    text: getContrastColor(color),
+                    correct: lightenColor(color, 20)
+                };
+
+                nameEls[id].textContent = nameInput.value || `Team ${id.slice(-1)}`;
+                sectionEls[id].style.backgroundColor = teamColors[id].bg;
+                nameEls[id].style.color = teamColors[id].text;
+                scoreEls[id].style.color = teamColors[id].text;
+                statusEls[id].style.color = teamColors[id].text;
+                
+                answerEls[id].style.borderColor = teamColors[id].bg;
+                // unitEls[id].style.borderColor = teamColors[id].bg; // Removed
+            });
+            
+            setupModal.classList.add('hidden');
+            gameContainer.classList.remove('hidden');
+            fullscreenBtn.classList.remove('hidden');
+            generateQuestion();
+        }
+
+        // --- Numpad Functions (Updated) ---
+        function openNumpad(inputElement) {
+            if (checkBtn.classList.contains('hidden')) return;
+            activeInput = inputElement;
+            numpadContainer.classList.remove('hidden');
+        }
+        function closeNumpad() {
+            if (activeInput) {
+                // When "Done" is pressed, treat it as a submission
+                const teamId = activeInput.id.split('-')[0];
+                submitAnswer(teamId);
+            }
+            activeInput = null;
+            numpadContainer.classList.add('hidden');
+        }
+        function appendNumpad(value) {
+            if (!activeInput) return;
+            // Disallow decimal point for these problems
+            if(value === '.') return;
+            // Increase character limit for larger answers
+            if(activeInput.value.length >= 6) return; // Kept at 6
+
+            activeInput.value += value;
+        }
+        function backspaceNumpad() {
+            if (!activeInput) return;
+            activeInput.value = activeInput.value.slice(0, -1);
+        }
+        
+        window.openNumpad = openNumpad;
+        window.closeNumpad = closeNumpad;
+        window.appendNumpad = appendNumpad;
+        window.backspaceNumpad = backspaceNumpad;
+        
+        // --- Drag Functionality (Unchanged) ---
+        dragElement(numpadContainer);
+        function dragElement(elmnt) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = document.getElementById("numpad-header");
+            const footer = document.getElementById("numpad-footer");
+            
+            if (header) {
+                header.onmousedown = dragMouseDown;
+                header.ontouchstart = dragMouseDown;
+            }
+             if (footer) {
+                footer.onmousedown = dragMouseDown;
+                footer.ontouchstart = dragMouseDown;
+            }
+
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+                pos3 = clientX;
+                pos4 = clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+                document.ontouchend = closeDragElement;
+                document.ontouchmove = elementDrag;
+            }
+
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                let clientX = e.clientX || e.touches[0].clientX;
+                let clientY = e.clientY || e.touches[0].clientY;
+                pos1 = pos3 - clientX;
+                pos2 = pos4 - clientY;
+                pos3 = clientX;
+                pos4 = clientY;
+                elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+                document.ontouchend = null;
+                document.ontouchmove = null;
+            }
+        }
+        
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // --- Event Listeners (Updated) ---
+        startGameBtn.addEventListener('click', startGame);
+        checkBtn.addEventListener('click', checkAnswers);
+        nextBtn.addEventListener('click', generateQuestion);
+        fullscreenBtn.addEventListener('click', toggleFullScreen);
+
+        // Unit selector change listener is no longer needed
+
+    </script>
+</body>
+</html>
+
+
+
