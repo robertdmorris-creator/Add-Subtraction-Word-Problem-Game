@@ -16,7 +16,8 @@
         }
         .main-grid {
             display: grid;
-            grid-template-rows: 1.5fr 1fr;
+            /* MODIFIED: Gave question area slightly more space */
+            grid-template-rows: 1.7fr 1fr;
             grid-template-columns: repeat(4, 1fr);
             gap: 12px;
             height: 98vh;
@@ -47,8 +48,8 @@
             transition: background-color 0.5s ease;
         }
         .question-text {
-            /* Adjusted font size for longer word problems */
-            font-size: 3.5rem; /* MODIFIED: Back to 3.5rem for shorter questions */
+            /* MODIFIED: Font size now scales with viewport width */
+            font-size: clamp(1.5rem, 3vw, 3.5rem);
             line-height: 1.2;
             font-weight: 800;
             color: #ffc83b; /* Yellow accent */
@@ -57,6 +58,8 @@
         }
         .score-text {
             text-shadow: 2px 2px 4px #00000080;
+            /* MODIFIED: Font size now scales with viewport width */
+            font-size: clamp(2.5rem, 5vw, 3.75rem);
         }
         .input-container {
             display: flex;
@@ -74,8 +77,8 @@
             /* Made input wider to fill container */
             width: 100%;
             text-align: center;
-            /* Made font bigger */
-            font-size: 2.25rem;
+            /* MODIFIED: Font size now scales with viewport width */
+            font-size: clamp(1.25rem, 2.5vw, 2.25rem);
             font-weight: 700;
             background-color: #f9fafb;
             cursor: pointer;
@@ -191,44 +194,52 @@
 
         <!-- Team Sections (Row 2, 4 columns) -->
         <div id="team1-section" class="team-section">
-            <h2 id="team1-name" class="text-4xl font-extrabold text-center">Team 1</h2>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <h2 id="team1-name" class="text-4xl font-extrabold text-center" style="font-size: clamp(1.25rem, 2.5vw, 2.25rem);">Team 1</h2>
             <p class="text-6xl font-extrabold score-text"><span id="team1-score">0</span></p>
             <div class="input-container">
                 <input type="text" id="team1-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
                 <!-- Unit select is hidden via CSS -->
                 <select id="team1-unit" class="unit-select"></select>
             </div>
-            <p id="team1-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <p id="team1-status" class="text-xl font-semibold mt-2 h-6 text-gray-800" style="font-size: clamp(0.875rem, 1.5vw, 1.25rem);"></p>
         </div>
 
         <div id="team2-section" class="team-section">
-            <h2 id="team2-name" class="text-4xl font-extrabold text-center">Team 2</h2>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <h2 id="team2-name" class="text-4xl font-extrabold text-center" style="font-size: clamp(1.25rem, 2.5vw, 2.25rem);">Team 2</h2>
             <p class="text-6xl font-extrabold score-text"><span id="team2-score">0</span></p>
             <div class="input-container">
                 <input type="text" id="team2-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
                 <select id="team2-unit" class="unit-select"></select>
             </div>
-            <p id="team2-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <p id="team2-status" class="text-xl font-semibold mt-2 h-6 text-gray-800" style="font-size: clamp(0.875rem, 1.5vw, 1.25rem);"></p>
         </div>
 
         <div id="team3-section" class="team-section">
-            <h2 id="team3-name" class="text-4xl font-extrabold text-center">Team 3</h2>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <h2 id="team3-name" class="text-4xl font-extrabold text-center" style="font-size: clamp(1.25rem, 2.5vw, 2.25rem);">Team 3</h2>
             <p class="text-6xl font-extrabold score-text"><span id="team3-score">0</span></p>
             <div class="input-container">
                 <input type="text" id="team3-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
                 <select id="team3-unit" class="unit-select"></select>
             </div>
-            <p id="team3-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <p id="team3-status" class="text-xl font-semibold mt-2 h-6 text-gray-800" style="font-size: clamp(0.875rem, 1.5vw, 1.25rem);"></p>
         </div>
 
         <div id="team4-section" class="team-section">
-            <h2 id="team4-name" class="text-4xl font-extrabold text-center">Team 4</h2>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <h2 id="team4-name" class="text-4xl font-extrabold text-center" style="font-size: clamp(1.25rem, 2.5vw, 2.25rem);">Team 4</h2>
             <p class="text-6xl font-extrabold score-text"><span id="team4-score">0</span></p>
             <div class="input-container">
                 <input type="text" id="team4-answer" class="answer-input" placeholder="Value" readonly onclick="openNumpad(this)">
                 <select id="team4-unit" class="unit-select"></select>
             </div>
-            <p id="team4-status" class="text-xl font-semibold mt-2 h-6 text-gray-800"></p>
+            <!-- MODIFIED: Font size now scales with viewport width -->
+            <p id="team4-status" class="text-xl font-semibold mt-2 h-6 text-gray-800" style="font-size: clamp(0.875rem, 1.5vw, 1.25rem);"></p>
         </div>
     </div>
 
@@ -261,14 +272,20 @@
 
 
     <script>
-        // --- NEW: Harder 2-Number Word Problem Templates ---
+        // --- UPDATED: Word Problem Templates for all 4 operations ---
         const PROBLEM_TEMPLATES = [
+            // Addition
             { type: 'add', text: "A school library has [NUM1] books. It receives a donation of [NUM2] new books. How many books does the library have now?" },
             { type: 'add', text: "On Monday, [NUM1] people visited the zoo. On Tuesday, [NUM2] people visited. How many people visited in total on those two days?" },
+            // Subtraction
             { type: 'sub', text: "A plane is flying at [NUM1] feet. It descends [NUM2] feet. What is the plane's new altitude?" },
             { type: 'sub', text: "A company has $[NUM1] in its budget. It spends $[NUM2] on new equipment. How much money is left in the budget?" },
-            { type: 'add', text: "A factory produced [NUM1] widgets in the morning and [NUM2] widgets in the afternoon. How many widgets were produced in all?" },
-            { type: 'sub', text: "A stadium has [NUM1] seats. There are [NUM2] fans at the game. How many seats are empty?" }
+            // Multiplication
+            { type: 'mul', text: "A farmer has [NUM1] rows of corn. There are [NUM2] plants in each row. How many corn plants are there in total?" },
+            { type: 'mul', text: "A bakery sells boxes of donuts. If each box has [NUM2] donuts, how many donuts are in [NUM1] boxes?" },
+            // Division
+            { type: 'div', text: "A teacher has [NUM1] pencils to give out equally to [NUM2] students. How many pencils does each student get?" },
+            { type: 'div', text: "A group of [NUM2] friends share [NUM1] baseball cards equally. How many cards does each friend receive?" }
         ];
         
         const TEAMS = ['team1', 'team2', 'team3', 'team4'];
@@ -338,22 +355,39 @@
             let questionString = "";
             let correctAnswer = 0;
 
-            // Generate numbers in larger ranges
-            num1 = Math.floor(Math.random() * 900) + 100; // 100-999
-            num2 = Math.floor(Math.random() * 900) + 100; // 100-999
-
+            // Generate numbers based on problem type
             switch (template.type) {
                 case 'add':
+                    num1 = Math.floor(Math.random() * 900) + 100; // 100-999
+                    num2 = Math.floor(Math.random() * 900) + 100; // 100-999
                     correctAnswer = num1 + num2;
                     questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
                     break;
                 
                 case 'sub':
+                    num1 = Math.floor(Math.random() * 900) + 100; // 100-999
+                    num2 = Math.floor(Math.random() * 900) + 100; // 100-999
                     // Ensure num1 is always larger than num2 for subtraction
                     if (num1 < num2) {
                         [num1, num2] = [num2, num1]; // Swap them
                     }
                     correctAnswer = num1 - num2;
+                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
+                    break;
+                
+                case 'mul':
+                    num1 = Math.floor(Math.random() * 90) + 10;  // 10-99
+                    num2 = Math.floor(Math.random() * 11) + 2;   // 2-12
+                    correctAnswer = num1 * num2;
+                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
+                    break;
+
+                case 'div':
+                    // Create a clean division problem
+                    const multiplier = Math.floor(Math.random() * 46) + 5; // The answer (5-50)
+                    num2 = Math.floor(Math.random() * 11) + 2;   // The divisor (2-12)
+                    num1 = num2 * multiplier; // The dividend
+                    correctAnswer = multiplier;
                     questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
                     break;
             }
@@ -679,6 +713,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
