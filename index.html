@@ -657,6 +657,12 @@
                 
                 pos3 = clientX;
                 pos4 = clientY;
+
+                // --- NEW FIX ---
+                // Remove translate classes so explicit top/left positioning works
+                elmnt.classList.remove('top-1/2', 'left-1/2', '-translate-x-1/2', '-translate-y-1/2');
+                // --- END FIX ---
+
                 document.onmouseup = closeDragElement;
                 document.onmousemove = elementDrag;
                 document.ontouchend = closeDragElement;
@@ -713,6 +719,7 @@
     </script>
 </body>
 </html>
+
 
 
 
