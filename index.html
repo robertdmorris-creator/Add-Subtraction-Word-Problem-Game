@@ -272,31 +272,31 @@
 
 
     <script>
-        // --- UPDATED: Word Problem Templates for all 4 operations ---
+        // --- UPDATED: Two-Step Word Problems (Mul/Div Focus) ---
         const PROBLEM_TEMPLATES = [
-            // Addition
-            { type: 'add', text: "A school library has [NUM1] books. It receives a donation of [NUM2] new books. How many books does the library have now?" },
-            { type: 'add', text: "On Monday, [NUM1] people visited the zoo. On Tuesday, [NUM2] people visited. How many people visited in total on those two days?" },
-            { type: 'add', text: "A factory produced [NUM1] toy cars on Friday and [NUM2] toy cars on Saturday. How many toy cars did it produce in all?" },
-            { type: 'add', text: "Sarah has [NUM1] stamps in her collection. Her brother gives her [NUM2] more. What is the new total number of stamps Sarah has?" },
+            // Mix: (Multiplication & Addition)
+            { questionString: "Cody bought 4 packs of trading cards. Each pack has 12 cards. He already had 20 cards. How many cards does he have in total?", correctAnswer: 68 },
+            { questionString: "Alisha earns $15 each hour for babysitting. She babysat for 5 hours. She also received a $25 tip. How much money did she earn in total?", correctAnswer: 100 },
+            { questionString: "Skylar bought 3 bouquets of flowers. Each bouquet has 8 flowers. She placed them in a vase that already had 6 flowers. How many flowers are in the vase now?", correctAnswer: 30 },
+            { questionString: "Ms. Dean's library has 5 shelves of history books. Each shelf holds 30 books. They just received a new shipment of 50 history books. How many history books does the library have in total?", correctAnswer: 200 },
             
-            // Subtraction
-            { type: 'sub', text: "A plane is flying at [NUM1] feet. It descends [NUM2] feet. What is the plane's new altitude?" },
-            { type: 'sub', text: "A company has $[NUM1] in its budget. It spends $[NUM2] on new equipment. How much money is left in the budget?" },
-            { type: 'sub', text: "A water tank holds [NUM1] gallons. If [NUM2] gallons are used, how many gallons are left in the tank?" },
-            { type: 'sub', text: "Mark is reading a book with [NUM1] pages. He has already read [NUM2] pages. How many pages does Mark have left to read?" },
+            // Mix: (Multiplication & Subtraction)
+            { questionString: "Ms. Carey's movie theater has 10 rows with 8 seats each. If 65 people are already seated, how many seats are empty?", correctAnswer: 15 },
+            { questionString: "Leon is saving $500. He saves $40 each week for 8 weeks. How much more money does he need to save?", correctAnswer: 180 },
+            { questionString: "A video game has 12 levels. Each level has 20 coins. If DJ has already collected 150 coins, how many coins are left to collect?", correctAnswer: 90 },
 
-            // Multiplication
-            { type: 'mul', text: "A farmer has [NUM1] rows of corn. There are [NUM2] plants in each row. How many corn plants are there in total?" },
-            { type: 'mul', text: "A bakery sells boxes of donuts. If each box has [NUM2] donuts, how many donuts are in [NUM1] boxes?" },
-            { type: 'mul', text: "A movie theater has [NUM1] sections. Each section has [NUM2] seats. What is the total seating capacity of the theater?" },
-            { type: 'mul', text: "If one bus can hold [NUM2] passengers, how many passengers can [NUM1] buses hold?" },
+            // Mix: (Division & Addition)
+            { questionString: "Ms. Mallard has 60 pencils. She divides them equally among 10 students. She also gives each student 3 pens. How many writing tools (pencils and pens) does each student get?", correctAnswer: 9 },
+            { questionString: "There are 45 apples to be packed in 5 boxes equally. An additional 2 apples are added to each box. How many apples are in each box now?", correctAnswer: 11 },
+            { questionString: "A bus traveled 150 miles on Monday and 130 miles on Tuesday. The bus gets 20 miles per gallon. How many gallons of gas did the bus use in total?", correctAnswer: 14 },
+            { questionString: "A pizza was cut into 16 slices. 4 friends shared it equally. If one friend, Terrell, also ate 2 breadsticks, how many items of food did Terrell eat?", correctAnswer: 6 },
 
-            // Division
-            { type: 'div', text: "A teacher has [NUM1] pencils to give out equally to [NUM2] students. How many pencils does each student get?" },
-            { type: 'div', text: "A group of [NUM2] friends share [NUM1] baseball cards equally. How many cards does each friend receive?" },
-            { type: 'div', text: "An orchard has [NUM1] apples to pack into [NUM2] boxes. How many apples will be in each box if they are shared equally?" },
-            { type: 'div', text: "A pizza restaurant has [NUM1] slices of pizza to be divided among [NUM2] families. How many slices does each family get?" }
+            // Mix: (Division & Subtraction)
+            { questionString: "Mr. Bob collects 80 eggs. He puts them into cartons that hold 10 eggs each. He sells 5 cartons. How many cartons does he have left?", correctAnswer: 3 },
+            { questionString: "A group of 30 friends share 90 slices of pizza equally. If one friend, Miracle, eats 1 of his slices, how many slices does Miracle have left?", correctAnswer: 2 },
+            { questionString: "Joshua had 200 dollars. He spent 80 dollars on a game. He then split the remaining money equally among his 3 siblings. How much money did each sibling get?", correctAnswer: 40 },
+            { questionString: "Mr. Cooper's shop has 100 t-shirts. They sell 40 t-shirts. The remaining t-shirts are placed on 5 racks equally. How many t-shirts are on each rack?", correctAnswer: 12 },
+            { questionString: "A $60 gift card is shared equally by 3 brothers. One brother, Leon, uses his share to buy a $12 book. How much money is left on Leon's share of the gift card?", correctAnswer: 8 }
         ];
         
         const TEAMS = ['team1', 'team2', 'team3', 'team4'];
@@ -356,60 +356,20 @@
 
         // --- Game Logic ---
 
+        // --- UPDATED: Simplified generateQuestion function ---
         function generateQuestion() {
             firstCorrectTeam = null; 
 
-            // Pick a random problem template
-            const template = PROBLEM_TEMPLATES[Math.floor(Math.random() * PROBLEM_TEMPLATES.length)];
-            
-            let num1, num2;
-            let questionString = "";
-            let correctAnswer = 0;
+            // Pick a random problem from the list
+            const problem = PROBLEM_TEMPLATES[Math.floor(Math.random() * PROBLEM_TEMPLATES.length)];
 
-            // Generate numbers based on problem type
-            switch (template.type) {
-                case 'add':
-                    num1 = Math.floor(Math.random() * 900) + 100; // 100-999
-                    num2 = Math.floor(Math.random() * 900) + 100; // 100-999
-                    correctAnswer = num1 + num2;
-                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
-                    break;
-                
-                case 'sub':
-                    num1 = Math.floor(Math.random() * 900) + 100; // 100-999
-                    num2 = Math.floor(Math.random() * 900) + 100; // 100-999
-                    // Ensure num1 is always larger than num2 for subtraction
-                    if (num1 < num2) {
-                        [num1, num2] = [num2, num1]; // Swap them
-                    }
-                    correctAnswer = num1 - num2;
-                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
-                    break;
-                
-                case 'mul':
-                    num1 = Math.floor(Math.random() * 90) + 10;  // 10-99
-                    num2 = Math.floor(Math.random() * 11) + 2;   // 2-12
-                    correctAnswer = num1 * num2;
-                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
-                    break;
-
-                case 'div':
-                    // Create a clean division problem
-                    const multiplier = Math.floor(Math.random() * 46) + 5; // The answer (5-50)
-                    num2 = Math.floor(Math.random() * 11) + 2;   // The divisor (2-12)
-                    num1 = num2 * multiplier; // The dividend
-                    correctAnswer = multiplier;
-                    questionString = template.text.replace('[NUM1]', num1).replace('[NUM2]', num2);
-                    break;
-            }
-
+            // Directly use the hardcoded question and answer
             currentQuestion = {
-                questionString,
-                correctAnswer,
+                questionString: problem.questionString,
+                correctAnswer: problem.correctAnswer,
             };
 
             questionTextEl.textContent = currentQuestion.questionString;
-            // populateUnitSelectors(); // No longer needed
             resetBoard();
         }
         
@@ -730,12 +690,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
